@@ -1,0 +1,65 @@
+---
+layout: runbook
+title: '#4471 · three problems, not one'
+owner: support desk
+status: open
+reviewed: 2026-10-29
+signature: Jarosław Pawelczyk
+---
+
+<script>
+  import ProblemTable from '#lib/kb/ProblemTable.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+
+  const repo = 'https://github.com/xawt/what-it-shows/issues';
+  const tickets = {
+    parser: { label: 'parser · #1', href: `${repo}/1` },
+    hint: { label: 'hint · #2', href: `${repo}/2` },
+    shift: { label: 'shift · #3', href: `${repo}/3` },
+  };
+</script>
+
+[#4471](/kb/incidents/4471) is marked known: one bug, one fix queued. It holds three problems.
+The reports were merged on subject line ([decision 0001](/kb/decisions/0001-dedupe-by-subject)),
+and every subject says "wrong day", so three causes ended up in one ticket.
+
+<Callout kind="warn">
+The fix queued for #4471 is a parser fix. It closes only the first row below. The other two
+keep coming after it ships.
+</Callout>
+
+## What #4471 holds
+
+<ProblemTable ticket={4471} {tickets} />
+
+Counted from the ticket export, one report per id: the export pages overlap, so some reports
+come twice. A report is placed by its tenant and the way it came in (`causes.ts`), not by the
+intake tag, which is a guess from the reporter's browser.
+
+## The three problems
+
+**`parser`: the shared parser reads dates month first.** Every tenant in #4471 writes the day
+first, so their dates come out with day and month swapped: 7 April becomes 4 July. It reaches
+people through the app, email and the booking-v2 form. This is the bug #4471 describes, and
+the queued fix is for it.
+
+**`hint`: the booking-v3 form tells people to type month first.** The form prints
+`MM/DD/YYYY` under its date field, then reads the date the tenant's way, day first. People do
+what the hint says, and the date flips. It comes only through the form, only for the tenants
+on booking-v3. The parser fix does not touch it: the fix is the hint (or the form's reading),
+in booking-v3.
+
+**`shift`: dates move by one day.** No day and month swap here: a Tuesday shows as a Monday,
+an invite arrives before the booking, the same meeting lands on different days for people in
+different places. That points at time zones, not at date order. The desk read these reports
+as a one-day move (`desk-notes.json`) but filed them under `parser` by tenant, so nobody owns
+them. The parser fix does not touch it.
+
+## For the desk
+
+- Keep #4471 for `parser`. Move the `hint` and `shift` reports to their own tickets.
+- When the parser fix ships, reports that keep coming are `hint` or `shift`, not a failed fix.
+- Merging on subject alone put three causes in one ticket. Check the cause before you merge.
+
+<RenderStamp {signature} />
