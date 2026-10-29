@@ -1,11 +1,11 @@
 # what-it-shows
 
 The support desk's kb export, with one page added: `src/routes/kb/incidents/4471/problems/+page.svx`
-("#4471 · three problems, not one") and the logic it runs (`src/lib/kb/problems.ts`,
-`src/lib/kb/ProblemTable.svelte`).
+("#4471 · two problems, not one") and the component it runs
+(`src/lib/kb/ProblemTable.svelte`).
 
 - `rendered/4471-problems.html`: that page as the desk sees it, built from `src/` and saved as one file.
-- Issues #1–#3: one ticket per problem found in #4471.
+- Issues #1 and #2: one ticket per problem found in #4471. #3 is closed as a duplicate of #1.
 - Build: `npm install && npm run build` renders every kb page to `build/`.
 
 The kb's own README follows.
